@@ -1,0 +1,19 @@
+# Runtime dependencies for toyota-tss-radar
+#   Install:  uv pip install -r requirements.txt
+#
+# SocketCAN support (candump/cansend, ip link) comes from the system
+# (package can-utils + kernel module gs_usb), not from pip.
+
+# CAN bus access. spoof_dsu.py uses the python-can 4.x API
+# (is_extended_id=, bustype="socketcan"); 3.x does NOT work unmodified.
+python-can>=4.0
+
+# DBC decoding of the Toyota ADAS frames (cantools.database namespace,
+# not the deprecated cantools.db).
+cantools>=39
+
+# Only for radarmap.py (bird's-eye view of the tracks) and make_test_log.py.
+# canwatch.py / canlog_stats.py / spoof_dsu.py run without these three.
+matplotlib>=3.5
+numpy>=1.21
+Pillow>=9        # PillowWriter for the GIF export in radarmap.py --gif

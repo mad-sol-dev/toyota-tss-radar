@@ -1,0 +1,15 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.vscode/
+.idea/
+*.log
+*.candump
+logs/
+
+# Toyota DBCs (fetched by tools/get_dbc.sh, separate license)
+dbc/
+
+# Locally adapted udev rule (your own serial numbers)
+udev/70-can-canable.rules

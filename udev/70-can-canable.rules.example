@@ -1,0 +1,42 @@
+# udev rule for CANable Pro sticks used in the toyota-tss-radar bench setup
+#
+# Matches each stick by its USB serial number and:
+#   - renames the kernel-assigned canX to a stable, role-based name
+#   - brings the interface up at 500 kbit/s automatically on plug
+#
+# NOTE: The gs_usb (candleLight) driver does NOT support the kernel's
+# automatic bus-off restart (`restart-ms`). Setting it makes `ip link
+# set up` fail with "Device doesn't support restart from Bus Off", which
+# silently aborts the udev RUN+= action. We therefore leave it off.
+# In practice bus-off shouldn't happen during normal bench operation
+# because the radar itself is an ACK partner on both buses. If it does
+# happen, recover with: `sudo ip link set can_X down; sudo ip link set
+# can_X up type can bitrate 500000`.
+#
+# After this rule is active, any user can `candump can_radar` etc.
+# without sudo, because the interface is already UP and SocketCAN
+# read/write doesn't require root.
+#
+# Setup:
+#   1. Copy the template:
+#        cp udev/70-can-canable.rules.example udev/70-can-canable.rules
+#   2. Read out each stick's serial number (only ONE stick plugged in, named can0):
+#        udevadm info -a -p /sys/class/net/can0 | grep -m1 'ATTRS{serial}'
+#      and replace the placeholders SERIAL_RADAR_STICK / SERIAL_CAR_STICK below.
+#      This is where you decide which stick goes on which bus — best to
+#      label the sticks.
+#   3. Install:
+#        sudo install -m 0644 udev/70-can-canable.rules /etc/udev/rules.d/
+#        sudo udevadm control --reload
+#        sudo udevadm trigger --subsystem-match=net --action=add
+#
+# To verify after install:
+#   ip -details link show can_radar
+#   ip -details link show can_car
+#
+# Mapping:
+#   can_radar  -> Toyota Denso DNMWR008 radar bus  (pins 5/6, black/white)
+#   can_car    -> vehicle-side bus of the radar        (pins 2/3, green/white)
+
+SUBSYSTEM=="net", ACTION=="add", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="606f", ATTRS{serial}=="SERIAL_RADAR_STICK", NAME="can_radar", RUN+="/usr/bin/ip link set can_radar up type can bitrate 500000"
+SUBSYSTEM=="net", ACTION=="add", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="606f", ATTRS{serial}=="SERIAL_CAR_STICK", NAME="can_car",   RUN+="/usr/bin/ip link set can_car   up type can bitrate 500000"
