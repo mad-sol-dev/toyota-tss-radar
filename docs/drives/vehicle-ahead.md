@@ -1,6 +1,7 @@
 # The vehicle ahead in the first-drive data
 
-> Text drafted with Claude (Anthropic); see [Authorship](../../README.md#authorship).
+> Written by Claude (Anthropic) from conversations with the maintainer and the
+> measurements; see [Authorship](../../README.md#authorship).
 
 The radar reports objects; which of them is the vehicle ahead is up to the
 analysis. This page shows how far that works with the recording of the

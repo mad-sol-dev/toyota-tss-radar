@@ -1,6 +1,7 @@
 # Which way is the radar looking?
 
-> Text drafted with Claude (Anthropic); see [Authorship](../../README.md#authorship).
+> Written by Claude (Anthropic) from conversations with the maintainer and the
+> measurements; see [Authorship](../../README.md#authorship).
 
 **Status:** Plan (November 2026). No reflector built yet, no static
 measurement done. The numbers below are calculated or taken from Toyota

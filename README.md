@@ -24,14 +24,15 @@ Details: [docs/drives/first-drive.md](docs/drives/first-drive.md).*
 ## Background
 
 The radar comes from a Prius XW50 (Denso DNMWR008, Toyota Safety Sense P,
-77 GHz). Connected to 12 V and a CAN stick, it sends the frames that the
-public DBC files describe, but every track is marked invalid, with or without
+77 GHz). With 12 V and a CAN stick on its radar bus, it sends the frames that
+the public DBC files describe, but every track is marked invalid, with or without
 a baking tray in front of it. That was to be expected: outside its car it
 waits for the driving support unit (DSU) it normally talks to.
 
 Which messages the DSU has to send was published by Faraz Khan (frk2) in 2018,
 building on work from comma.ai and wocsor. His script needed changes for
-current libraries (listed in the header of `tools/spoof_dsu.py`); then it ran,
+current libraries (listed in the header of `tools/spoof_dsu.py`) and a second
+CAN stick on the car-side bus, because the spoof sends on both; then it ran,
 and the baking tray showed up as a track on the same evening in May 2026.
 Standing still at about 2.2 m it read 0 m/s, moved away up to +1.00 m/s, moved
 closer −0.75 m/s.
@@ -41,6 +42,10 @@ radar that it is doing 5 km/h. Does it still track when it is really going
 much faster? In November 2026 it went on the front bumper of a VW T3, the test
 vehicle, and recorded 110 minutes. It kept tracking. Other used radars and
 what is known about them: [docs/market-overview.md](docs/market-overview.md).
+
+![The radar on its bracket on the front bumper of the VW T3](docs/img/radar-on-bumper.jpg)
+
+*The radar on the front bumper of the test vehicle.*
 
 ## What came out of it
 

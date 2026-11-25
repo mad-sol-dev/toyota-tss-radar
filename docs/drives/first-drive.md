@@ -1,6 +1,7 @@
 # First road drive
 
-> Text drafted with Claude (Anthropic); see [Authorship](../../README.md#authorship).
+> Written by Claude (Anthropic) from conversations with the maintainer and the
+> measurements; see [Authorship](../../README.md#authorship).
 
 The radar had only ever seen a baking tray and a Dibond plate on the bench.
 The first drive (recording only) was meant to answer one question: does the

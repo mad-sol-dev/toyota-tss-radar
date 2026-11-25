@@ -1,6 +1,7 @@
 # Tools
 
-> Text drafted with Claude (Anthropic); see [Authorship](../README.md#authorship).
+> Written by Claude (Anthropic) from conversations with the maintainer and the
+> measurements; see [Authorship](../README.md#authorship).
 
 All tools live in `tools/` and are called from the repository root, e.g.
 `tools/roadreport.py logs/<session>`. They run on Linux; the recording tools

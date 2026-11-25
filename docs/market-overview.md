@@ -1,6 +1,6 @@
 # Market overview and further documents
 
-> Draft, compiled with Claude (Anthropic) from research chats in May 2026.
+> Compiled by Claude (Anthropic) from research chats in May 2026.
 > Prices are samples from eBay searches in May 2026, not a market analysis.
 > See [Authorship](../README.md#authorship).
 

@@ -1,6 +1,7 @@
 # What the radar sends
 
-> Text drafted with Claude (Anthropic); see [Authorship](../README.md#authorship).
+> Written by Claude (Anthropic) from conversations with the maintainer and the
+> measurements; see [Authorship](../README.md#authorship).
 
 Frames of the Denso DNMWR008 (88210-47090) as seen on its two CAN buses, both
 at 500 kbit/s. IDs, lengths, rates, counters and checksums were checked

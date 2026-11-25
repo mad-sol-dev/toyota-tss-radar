@@ -1,6 +1,7 @@
 # Bench setup
 
-> Text drafted with Claude (Anthropic); see [Authorship](../../README.md#authorship).
+> Written by Claude (Anthropic) from conversations with the maintainer and the
+> measurements; see [Authorship](../../README.md#authorship).
 
 How the radar is wired and connected to the laptop. Everything here was
 built and verified on the bench. Road results:
