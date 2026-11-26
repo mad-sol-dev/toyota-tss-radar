@@ -6,9 +6,8 @@ what it sees, and a first road drive to find out how well it does that.
 > **About this repo.** Text and code were written by Claude (Anthropic's AI
 > assistant) from conversations with the maintainer (@mad-sol-dev).
 > The maintainer built the hardware, measured, drove, decided and set the
-> questions. The text is not yet fact-checked by the maintainer; the code is
-> tested by running it, not reviewed line by line. How facts and readings are
-> told apart: [Authorship](#authorship).
+> questions. The code is tested by running it, not reviewed line by line.
+> How facts and readings are told apart: [Authorship](#authorship).
 >
 > The radar is a salvaged car part. Nothing here has been validated for use in
 > a safety function. Do not rely on it.
