@@ -9,7 +9,9 @@ against the complete CAN log of the [first drive](drives/first-drive.md)
 (110 min). Signal names come from the public DBC
 (`toyota_prius_2017_adas.dbc`, fetched by `tools/get_dbc.sh`); `SCORE` and
 `STATUS_MSG` only from the current
-[opendbc `toyota_adas.dbc`](https://github.com/commaai/opendbc/blob/master/opendbc/dbc/toyota_adas.dbc).
+[opendbc `toyota_adas.dbc`](https://github.com/commaai/opendbc/blob/master/opendbc/dbc/toyota_adas.dbc),
+which `tools/get_dbc.sh` also fetches (pinned to the state of June 2026).
+In Python: `radar_dbc.load(radar_dbc.ADAS_CURRENT)`.
 
 ## Radar bus (`can_radar`)
 
@@ -69,8 +71,9 @@ the invalid track frames looked like this; the rest carried values with
 
 The distance scale deviates slightly from GNSS
 ([first-drive.md](drives/first-drive.md)). The current opendbc defines
-`LONG_DIST` as 15 bits at 0.01 m: the same value as above, with the two lowest
-bits of byte 2 added. The tools here still use the 13-bit form.
+`LONG_DIST` as 15 bits at 0.01 m: the 13-bit value from above with the two
+lowest bits of byte 2 added, so 0 to 0.03 m larger (checked on the bench logs
+of 26 Nov 2026). The tools here still use the 13-bit form.
 
 ## `SCORE` (`TRACK_B`, byte 2)
 

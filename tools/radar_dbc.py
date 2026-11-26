@@ -17,8 +17,9 @@ SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_DIR   = os.path.dirname(SCRIPT_DIR)
 DBC_DIR    = os.environ.get('RADAR_DBC_DIR', os.path.join(REPO_DIR, 'dbc'))
 
-ADAS = 'toyota_prius_2017_adas.dbc'
+ADAS = 'toyota_prius_2017_adas.dbc'          # frk2 revision, used by the tools
 PT   = 'toyota_prius_2017_pt_generated.dbc'
+ADAS_CURRENT = 'toyota_adas.dbc'             # current opendbc: + SCORE, STATUS_MSG
 
 
 def path(name):

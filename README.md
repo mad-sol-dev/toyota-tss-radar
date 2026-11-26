@@ -89,7 +89,7 @@ tools/radarmap.py /tmp/synth.log --png /tmp/map.png  # bird's-eye view as an ima
 ```
 
 `tools/get_dbc.sh` fetches the DBC files (the radar's signal definitions) from
-the upstream repo at a fixed, checksum-verified revision. If they live
+the upstream repos at fixed, checksum-verified revisions. If they live
 elsewhere, point `RADAR_DBC_DIR` at that folder.
 
 ## Recording a drive
@@ -154,9 +154,11 @@ locally and not tracked.
   listed in its header, the license text is in
   [LICENSES/MIT-frk2.txt](LICENSES/MIT-frk2.txt).
 - [commaai/opendbc](https://github.com/commaai/opendbc): the Toyota DBC
-  files used to decode the radar tracks. `get_dbc.sh` fetches them from
-  [frk2/opendbc](https://github.com/frk2/opendbc), a fork, at the revision
-  frk2 uses. They are not bundled here because of their own licenses.
+  files used to decode the radar tracks. `get_dbc.sh` fetches the ones the
+  tools use from [frk2/opendbc](https://github.com/frk2/opendbc), a fork, at
+  the revision frk2 uses, and the current `toyota_adas.dbc` (with `SCORE` and
+  `STATUS_MSG`) from opendbc itself. They are not bundled here because of
+  their own licenses.
 - [wocsor/Toyota-Radar-Spoofer](https://github.com/wocsor/Toyota-Radar-Spoofer):
   early research, read for orientation. Its pinout (for an 88210-07010) has
   power and ground on pins 1 and 8 the other way round than measured here, see
