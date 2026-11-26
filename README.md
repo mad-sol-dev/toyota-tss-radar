@@ -96,8 +96,8 @@ elsewhere, point `RADAR_DBC_DIR` at that folder.
 ## Recording a drive
 
 > `spoof_dsu.py` and `roadlog.sh` were reorganised after the first drive and
-> have not been run with the real radar since (November 2026), only offline.
-> What was checked: [docs/tools.md](docs/tools.md). Do a bench run first.
+> bench-tested again with the radar on 26 Nov 2026; GNSS logging only offline.
+> Details: [docs/tools.md](docs/tools.md).
 
 With the radar powered and both CAN sticks set up
 ([docs/hardware/bench-setup.md](docs/hardware/bench-setup.md)):

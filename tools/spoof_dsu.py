@@ -37,8 +37,7 @@ Start (in the repo directory):
   tools/spoof_dsu.py
   (in parallel, in a second terminal: candump can_radar | tools/canwatch.py)
 
-Status (November 2026): this version has not been run with the real radar yet,
-only offline (same frames as the version used on the first drive).
+Status: bench-tested with the radar on 26 Nov 2026 (see docs/tools.md).
 """
 
 import time

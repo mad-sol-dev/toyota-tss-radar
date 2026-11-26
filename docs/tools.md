@@ -39,10 +39,12 @@ it measures relative speed on its own ([first-drive.md](drives/first-drive.md)).
 Based on [frk2/toyoyta_radar_control_can](https://github.com/frk2/toyoyta_radar_control_can);
 the changes are listed in the file header.
 
-> This version has not been run with the real radar yet (November 2026). The
-> bench tests and the first drive used an earlier version. Offline, with a
-> fake CAN bus, both send the same 4000 frames in the same order; the cyclic
-> frames also match the CAN log of the drive. A bench run is still open.
+> Bench test of this version with the radar (26 Nov 2026, reflector at about
+> 2.3 m): valid tracks after 1.4 s, all radar frames with a correct checksum.
+> The first drive used an earlier version; offline, with a fake CAN bus, both
+> send the same 4000 frames in the same order. In one of four runs the CAN
+> log of the car-side bus showed only one of the five one-time start frames,
+> and the radar woke up all the same; the cause is not known.
 
 ```bash
 tools/spoof_dsu.py
@@ -70,11 +72,11 @@ analyze locally afterwards — no uploading, no copying around.
 
 ### roadlog.sh — one-command recording
 
-> In this repository `roadlog.sh` has been tested offline only (fake
-> `candump`, GNSS from a pseudo-terminal, `spoof_dsu.py` without CAN: paths,
-> restarts, status line, Ctrl+C). A run with the real radar and CAN sticks
-> is still open; do a bench run first. The first drive was recorded with an
-> earlier version.
+> Bench test with the radar (26 Nov 2026, without GNSS): recording, status
+> line, summary and Ctrl+C work; a spoof killed during the recording was
+> restarted after 2 s and valid tracks were back after 1.8 s. GNSS was tested
+> offline only in this version (pseudo-terminal); the first drive, with the
+> Reach, was recorded with an earlier version.
 
 Starts the DSU spoof (unless it's already running), logs `can_radar` **and**
 `can_car` in the canonical SocketCAN log format (replayable with `canplayer`)
