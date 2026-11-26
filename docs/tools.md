@@ -233,8 +233,12 @@ ego at the origin (direction of travel pointing up), color by v_rel
 tools/radarmap.py logs/<session>/can_radar.log                 # offline movie (display)
 tools/radarmap.py logs/<session>/can_radar.log --png map.png   # headless overview
 tools/radarmap.py logs/<session>/can_radar.log --gif clip.gif  # headless animation
-candump can_radar | tools/radarmap.py                          # live (display)
+candump -L can_radar | tools/radarmap.py                       # live (display)
 ```
+
+Live input can be `candump -L` or candump's default output; versions before
+26 Nov 2026 silently ignored the default output and showed no tracks. Log
+files need `candump -L` (or a `-t` timestamp), since the movie needs times.
 
 Each track gets an arrow to where it will be in 1 s (along the line of sight)
 and its v_rel as a number — color alone is hard to read at small speeds.

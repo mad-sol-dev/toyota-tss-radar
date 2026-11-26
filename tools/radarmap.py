@@ -7,7 +7,8 @@ Three modes:
                      (plays the recording back as an animation; needs display)
   2) PNG overview:   tools/radarmap.py logs/<s>/can_radar.log --png map.png
                      (all valid detections as a scatter plot; headless)
-  3) Live:           candump can_radar | tools/radarmap.py
+  3) Live:           candump -L can_radar | tools/radarmap.py
+                     (candump without -L works too)
                      (real-time view; needs display)
 
 Axes: x = lateral offset (LAT_DIST), y = forward distance (LONG_DIST).
@@ -32,7 +33,12 @@ import sys
 
 import radar_dbc
 
+# candump -L:            (1795656438.746083) can_radar 210#A6FFF800000000B7
 LINE_RE = re.compile(r'\(([\d.]+)\)\s+(\S+)\s+([0-9A-Fa-f]+)#([0-9A-Fa-f]*)')
+# candump without -L:     can_radar  210   [8]  A6 FF F8 00 00 00 00 B7
+# (optionally with a -t timestamp in front, e.g. -ta: (1795656438.746083))
+PLAIN_RE = re.compile(r'\s*(?:\(([^)]*)\)\s+)?(\S+)\s+([0-9A-Fa-f]{3,8})\s+\[\d+\]\s+'
+                      r'((?:[0-9A-Fa-f]{2}\s*)*)')
 VMAX = 15.0          # m/s color scale clip (--vmax; e.g. 2 on the bench)
 ARROW_S = 1.0        # s, the v_rel arrow points to where the track is in this time
 HOLD = 0.30          # s, how long a track stays visible without an update
@@ -51,20 +57,28 @@ def _open(path):
 
 
 def decode_line(line):
-    """candump line -> (ts, lat, lon, vrel) for a valid track, else None."""
-    m = LINE_RE.match(line)
+    """candump line -> (ts, cid, lat, lon, vrel) for a valid track, else None.
+
+    Reads the -L log format and candump's default screen format. ts is None
+    when the line carries no numeric timestamp (fine for the live view, which
+    uses the arrival time)."""
+    m = LINE_RE.match(line) or PLAIN_RE.match(line)
     if not m:
         return None
     cid = int(m.group(3), 16)
     if not (0x210 <= cid <= 0x21F):
         return None
     try:
-        dec = DB.decode_message(cid, bytes.fromhex(m.group(4)))
+        dec = DB.decode_message(cid, bytes.fromhex(m.group(4).replace(' ', '')))
     except Exception:
         return None
     if dec.get('VALID') != 1:
         return None
-    return (float(m.group(1)), cid,
+    try:
+        ts = float(m.group(1))
+    except (TypeError, ValueError):
+        ts = None
+    return (ts, cid,
             float(dec.get('LAT_DIST', 0.0)),
             float(dec.get('LONG_DIST', 0.0)),
             float(dec.get('REL_SPEED', 0.0)))
@@ -76,9 +90,11 @@ def parse_log(path):
     with _open(path) as fh:
         for line in fh:
             r = decode_line(line)
-            if r:
+            if r and r[0] is not None:
                 recs.append(r)
     if not recs:
+        print(f"[radarmap] no valid tracks with timestamps in {path} "
+              "(log files need candump -L or a -t timestamp)", file=sys.stderr)
         return [], 0.0
     t0 = recs[0][0]
     recs = [(t - t0, cid, la, lo, vr) for (t, cid, la, lo, vr) in recs]
@@ -342,7 +358,7 @@ def play_file(recs, span, max_range, vmax=VMAX, view='top'):
 
 
 def live_stdin(max_range, vmax=VMAX, view='top'):
-    """Real-time view from 'candump can_radar | tools/radarmap.py' (needs display).
+    """Real-time view from 'candump -L can_radar | tools/radarmap.py' (needs display).
 
     A reader thread decodes stdin into a queue; the animation callback only
     drains that queue. (Reading sys.stdin in the callback itself blocks until
