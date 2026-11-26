@@ -69,10 +69,11 @@ Verification: `ip -details link show can_radar` → `state UP, bitrate 500000`.
   parameter, otherwise `ip link set up` fails silently and `udev RUN+=` aborts.
 * udev `RUN+=` errors are not reported visibly; an interface that doesn't come
   up is the only symptom.
-* After the CAN sticks dropped out for a moment while the spoof was running
-  (USB replugged, 26 Nov 2026), the radar kept measuring but marked every
-  track invalid, and restarting the spoof did not help. Switching the radar's
-  12 V off and on did. In the status frame `0x231` byte 3 read `F1` in that
-  state and `F0` otherwise; what the bit means is not documented.
+* Once, both CAN sticks dropped out for about 10 s while the spoof was running
+  (USB replugged, 26 Nov 2026). Afterwards the spoof ran again and
+  `RADAR_STATUS` read 1, but every track stayed invalid for about 5 minutes.
+  25 s after the spoof was restarted they were valid again. Pausing the spoof
+  for up to 30 s does not reproduce this ([radar-frames.md](../radar-frames.md));
+  the cause is open.
 * `lsusb` device numbers change on every replug — bind via USB serial number,
   not device ID.

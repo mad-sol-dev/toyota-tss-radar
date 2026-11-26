@@ -7,18 +7,20 @@ Frames of the Denso DNMWR008 (88210-47090) as seen on its two CAN buses, both
 at 500 kbit/s. IDs, lengths, rates, counters and checksums were checked
 against the complete CAN log of the [first drive](drives/first-drive.md)
 (110 min). Signal names come from the public DBC
-(`toyota_prius_2017_adas.dbc`, fetched by `tools/get_dbc.sh`).
+(`toyota_prius_2017_adas.dbc`, fetched by `tools/get_dbc.sh`); `SCORE` and
+`STATUS_MSG` only from the current
+[opendbc `toyota_adas.dbc`](https://github.com/commaai/opendbc/blob/master/opendbc/dbc/toyota_adas.dbc).
 
 ## Radar bus (`can_radar`)
 
 | ID | Bytes | Rate | Content |
 |---|---|---|---|
 | `0x210`–`0x21F` | 8 | 20 Hz | `TRACK_A`: 16 track slots, distance, lateral offset, relative speed |
-| `0x220`–`0x227` | 8 | 20 Hz | `TRACK_B`, slots 0–7: `REL_ACCEL`, the rest is not in the DBC |
+| `0x220`–`0x227` | 8 | 20 Hz | `TRACK_B`, slots 0–7: `REL_ACCEL`, `SCORE`; the other bytes are unknown |
 | `0x228`–`0x22F` | 6 | 20 Hz | `TRACK_B`, slots 8–15, shorter |
-| `0x230`–`0x232` | 7 / 8 / 8 | 20 Hz | not in the DBC; presumably status |
-| `0x3D0`–`0x3D3` | 8 | 10 Hz | not in the DBC; presumably diagnostics |
-| `0x123` | 7 | 10 Hz | constant during the drive, looks like a heartbeat |
+| `0x230`–`0x232` | 7 / 8 / 8 | 20 Hz | not in the DBC; `0x230` bytes 3–4 count since power-on (see below) |
+| `0x3D0`–`0x3D3` | 8 | 10 Hz | not in the DBC; meaning unknown |
+| `0x123` | 7 | 10 Hz | `STATUS_MSG` (see below) |
 
 Without the DSU messages the radar sends the track frames too, but every slot
 is invalid (see below). With the spoof running, its own four frames appear on
@@ -66,7 +68,46 @@ the invalid track frames looked like this; the rest carried values with
 `VALID` = 0.
 
 The distance scale deviates slightly from GNSS
-([first-drive.md](drives/first-drive.md)).
+([first-drive.md](drives/first-drive.md)). The current opendbc defines
+`LONG_DIST` as 15 bits at 0.01 m: the same value as above, with the two lowest
+bits of byte 2 added. The tools here still use the 13-bit form.
+
+## `SCORE` (`TRACK_B`, byte 2)
+
+Values 0–100. For valid tracks of vehicles ahead on the first drive (moving
+our way, by GNSS), the median depends on the lateral offset:
+
+| `LAT_DIST` (absolute) | median `SCORE` |
+|---|---:|
+| 0–0.5 m | 100 |
+| 0.5–1 m | 99 |
+| 1–1.5 m | 75 |
+| 1.5–2.5 m | 25 |
+| 2.5 m and more | 0 |
+
+For stationary objects and oncoming traffic the median is 0. openpilot also
+takes a track with `VALID` = 0 if its `SCORE` is above 50 and the slot had
+valid frames shortly before
+([`radar_interface.py`](https://github.com/commaai/opendbc/blob/master/opendbc/car/toyota/radar_interface.py)).
+
+## Status (`0x123`, `STATUS_MSG`)
+
+`RADAR_STATUS` is the two bits 4–3 of byte 2. Observed:
+
+- 0 after power-on, until the spoof frames arrive;
+- 1 while they arrive;
+- 0 again about 0.8 s after they stop, 1 again about 0.3 s after they resume.
+
+Other values were not seen. `RADAR_PRE_FAULT` was always 0. On this unit the
+`INVALID_COUNTER` field of the DBC overlaps the checksum byte and changes only
+with it.
+
+## Power-on counter (`0x230`, bytes 3–4)
+
+16 bits, +1 per frame (20 Hz), 4 in the first frame after power-on. Over
+about 160 000 frames (first drive and bench) it never went backwards except at
+a power-on; while the CAN sticks were gone for 10 s it advanced by 206, as at
+20 Hz. It therefore shows whether the radar has restarted.
 
 ## Counter and checksum
 
@@ -83,6 +124,26 @@ def checksum(can_id, data):          # data includes the checksum byte
 
 On the car-side bus it also holds for the constant frames `0x283`, `0x343` and
 `0x344`. It does not hold for `0x365`, `0x366`, `0x4CB` and `0x4FF`.
+
+## What the radar needs to wake up
+
+Bench series, November 2026: radar on its back facing an office ceiling (four
+stationary targets), switched off and on by relay before every run, spoof
+started 1 s after power-on, 30 s per run, each variant 3 times in shuffled
+order. All runs started from a fresh power-on (counter in `0x230` = 4).
+
+| Variant | Result |
+|---|---|
+| full spoof | first valid track 0.31 s after the spoof starts, 80 valid track frames per second |
+| without `0x160` or without `0x161` | `RADAR_STATUS` back to 0 after 0.9 s, all slots empty from then on |
+| any other single frame left out, `0xB4` (speed) included | same as the full spoof |
+| only `0x160` and `0x161`, nothing on the car-side bus | same as the full spoof |
+| speed 0, 5 or 50 km/h, sent once or at 50 Hz | same as the full spoof |
+| spoof paused for 2, 10 or 30 s | tracks invalid about 0.7 s after the pause starts, valid again 0.36–0.42 s after it ends, with or without resending the start frames |
+
+Not covered: moving targets, the road, and running without the second CAN
+stick (it was connected in all runs and acknowledges the radar's `0x4FF`).
+`tools/spoof_dsu.py` still sends all frames.
 
 ## On the bench
 
